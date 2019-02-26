@@ -11,9 +11,6 @@ Motor left_back = 1_rmtr;
 Motor right_front = 4_mtr;
 Motor right_back = 3_mtr;
 
-ADIEncoder left(1, 2, false);
-ADIEncoder right(3, 4, true);
-
 Motor flywheel_mtr = 6_mtr;
 
 Motor lift_mtr = 10_rmtr;
@@ -23,11 +20,9 @@ Motor intake_mtr = 7_mtr;
 Motor index_mtr = 9_mtr;
 
 //drive train control
-ChassisControllerPID drive = ChassisControllerFactory::create(
-	{left_front, left_back}, {right_front, right_back},
-	ADIEncoder(1, 2, false), ADIEncoder(3, 4, false),
-	IterativePosPIDController::Gains{0.001, 0, 0.0001},
-  IterativePosPIDController::Gains{0.001, 0, 0.0001},
+ChassisControllerIntegrated drive = ChassisControllerFactory::create(
+	{left_front, left_back},
+	{right_front, right_back},
 	AbstractMotor::gearset::green,
 	{4_in, 11.75_in}
 );
@@ -80,7 +75,7 @@ void driveTurn(int degrees, int side, int speed){ //Pos degrees turns right
 	}
 
 	while (running) {
-		error = degrees - dtheta;
+		error = degrees - gyroA.get();
 		out = error;
 
 		left_front.moveVelocity(out);
@@ -93,68 +88,13 @@ void driveTurn(int degrees, int side, int speed){ //Pos degrees turns right
 		}
 
 		std::cout << "error:   " << error << '\n';
-		std::cout << "gyro:    " << dtheta << '\n';
+		std::cout << "theta A: " << thetaA << '\n';
+		std::cout << "gyro A:  " << gyroA.get() << '\n';
 		std::cout << "degrees: " << degrees << '\n';
 
 		pros::delay(50);
 	}
 	drive.tank(0, 0);
-	double currentL = left.get();
-	double currentR = right.get();
-	double prevL = currentL;
-	double prevR = currentR;
-
-	if (degrees < 0) {
-		while (currentL - prevL < 1) {
-			prevL = currentL;
-			left_front.moveVelocity(1);
-			left_back.moveVelocity(1);
-
-			pros::delay(5);
-			currentL = left.get();
-		}
-	} else {
-		while (currentR - prevR < 1) {
-			prevR = currentR;
-			right_front.moveVelocity(1);
-			right_back.moveVelocity(1);
-
-			pros::delay(5);
-			currentR = right.get();
-		}
-	}
-}
-
-void drivePID(int speed, int encDist){
-	double kp, ki, kd;
-	kp = 0.0;
-	ki = 0.0;
-	kd = 0.0;
-
-	double currentL = left.get();
-	double currentR = right.get();
-	double prevL, prevR = 0;
-
-	double gain, out;
-
-	int ka = encDist / 3;
-
-	while (fabs(currentL - prevL) < 1 && fabs(currentR - prevR) < 1) {
-		if (currentL - prevL > speed / ka) {
-			out += ka;
-		}
-
-		out /= speed; // convert from velocity to [-1, 1]
-
-		drive.tank(out + gain, out - gain);
-
-		prevL = currentL;
-		prevR = currentR;
-		currentL = left.get();
-		currentR = right.get();
-
-		pros::delay(20);
-	}
 }
 
 void driveDist(float dist, int speed){//in inches

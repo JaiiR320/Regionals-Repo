@@ -11,12 +11,17 @@ void mainPathGen(){
   );
   driveProfile.generatePath({
     Point{0_ft, 0_ft, 0_deg},
+    Point{42_in, 0_in, 0_deg}},
+    "42"
+  );
+  driveProfile.generatePath({
+    Point{0_ft, 0_ft, 0_deg},
     Point{10_in, 0_in, 0_deg}},
     "10"
   );
   driveProfile.generatePath({ // generate 28 inch path
     Point{0_ft, 0_ft, 0_deg},
-    Point{28_in, 0_ft, 0_deg}},
+    Point{16_in, 0_ft, 0_deg}},
     "28"
   );
 }

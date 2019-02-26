@@ -79,8 +79,6 @@ void opcontrol() {
 				lift.setTarget(0);
 			}
 
-			std::cout << "Gyro: " << gyro.get() << '\n';
-
 			pros::delay(20);
 		}
 

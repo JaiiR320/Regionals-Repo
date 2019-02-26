@@ -11,14 +11,12 @@ void mainAuton(int side){
   driveProfile.setTarget("34");
   driveProfile.waitUntilSettled();
   drive.setMaxVelocity(175);
-  driveProfile.setTarget("34", true);
+  driveProfile.setTarget("42", true);
   driveProfile.waitUntilSettled();
   delay(500);
   drive.setMaxVelocity(200);
 
-  driveTurn(90, side, 85);
-
-  drive.tank(.01, .01);
+  driveTurn(91, side, 85);
 
   driveProfile.setTarget("10");
   driveProfile.waitUntilSettled();
@@ -43,8 +41,6 @@ void mainAuton(int side){
   index(0);
 
   driveProfile.removePath("38"); // remove old paths for memory
-  driveProfile.removePath("34 red"); // remove old paths for memory
-  driveProfile.removePath("34 blue"); // remove old paths for memory
 
   driveProfile.generatePath({
     Point{0_ft, 0_ft, 0_deg},
@@ -53,14 +49,13 @@ void mainAuton(int side){
   );
 
   driveTurn(14, side, 100);
-  delay(500);
+
   driveProfile.setTarget("18");
   driveProfile.waitUntilSettled();
   driveProfile.setTarget("18", true); // move into flag
   driveProfile.waitUntilSettled();
 
-  driveTurn(-105, side, 100);
-  delay(800);
+  driveTurn(-105, side, 100); // turn to okapa
 
   intake(-200);
   drive.setMaxVelocity(150);
@@ -68,7 +63,6 @@ void mainAuton(int side){
   driveProfile.waitUntilSettled();
 
   driveTurn(65, side, 100);
-  delay(650);
   driveDist(36, 200);
   delay(3000);
 

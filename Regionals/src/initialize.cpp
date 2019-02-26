@@ -124,8 +124,6 @@ void initialize() {
 	for (std::size_t i = 0; i < 1; i++){
 		lv_btnm_set_toggle(duoBTNS, true, i);
 	}
-
-	update();
 }
 
 void disabled() {

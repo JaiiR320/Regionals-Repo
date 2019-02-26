@@ -5,7 +5,7 @@ ADIGyro gyroB(8, .1);
 
 double thetaT = 0;
 double thetaA = 0;
-double dTheta;
+double dtheta = 0;
 int dir = 1;
 
 void update(void* params){
