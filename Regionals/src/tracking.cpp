@@ -7,7 +7,7 @@ double thetaT = 0;
 double thetaA = 0;
 double dtheta = 0;
 int dir = 1;
-
+/*
 void update(void* params){
   while (1) {
     if (gyroA.get() < 0) {
@@ -22,3 +22,4 @@ void update(void* params){
 }
 
 pros::Task tracking(update);
+*/

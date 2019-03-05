@@ -2,6 +2,8 @@
 
 double bot_width = 11.75 / 2;
 
+double angle = 0;
+
 //Controllers
 Controller master = ControllerId::master;
 Controller partner = ControllerId::partner;
@@ -13,7 +15,7 @@ Motor right_back = 3_mtr;
 
 Motor flywheel_mtr = 6_mtr;
 
-Motor lift_mtr = 10_rmtr;
+Motor lift_mtr = 10_mtr;
 
 Motor intake_mtr = 7_mtr;
 
@@ -30,8 +32,8 @@ ChassisControllerIntegrated drive = ChassisControllerFactory::create(
 //Motion profile
 AsyncMotionProfileController driveProfile = AsyncControllerFactory::motionProfile(
 	1.06, //Max Linear velocity m/s (calculated based off rpm of motor)
-  4, //max acceleration m/s/s (kailas 4) (me 14.2)
-  10, //max jerk m/s/s/s (kailas 10) (me 1400)
+  2.5, //max acceleration m/s/s (kailas 4) (me 14.2)
+  5, //max jerk m/s/s/s (kailas 10) (me 1400)
 	drive //chassis
 );
 
@@ -41,11 +43,17 @@ AsyncVelIntegratedController flywheel = AsyncControllerFactory::velIntegrated(fl
 //lift control
 AsyncPosIntegratedController lift = AsyncControllerFactory::posIntegrated(lift_mtr);
 
-void driveTurn(int degrees, int side, int speed){ //Pos degrees turns right
-	degrees *= side;
-
-	thetaT += degrees; // sets global theoretical angle
-	double arclength = 2 * 3.1415926 * bot_width * (double(degrees) / 360);
+double botAngle(){
+	double dir = 1;
+	if (gyroA.get() < 0) {
+		dir = -1;
+	}
+	double angle = ((fabs(gyroA.get()) + fabs(gyroB.get())) / 2) * dir;
+	return angle;
+}
+void driveTurn(double degrees, int speed){ //Pos degrees turns right
+	//41.8 in/s, 9.15 in for 90 deg turn,
+	double arclength = 2 * 3.1415926 * bot_width * (degrees / 360);
 
 	double dist = (arclength / 12.566) * 360;
 
@@ -56,49 +64,126 @@ void driveTurn(int degrees, int side, int speed){ //Pos degrees turns right
 	right_back.moveRelative(-dist, speed);
 	right_front.moveRelative(-dist, speed);
 
-	//41.8 in/s, 9.15 in for 90 deg turn,
-
 	double ratio = double(speed) / 200.0;
 	double time = (arclength / (41.8 * ratio)) * 1000;
 	if (time < 0) {
 		time *= -1;
 	}
 
-	pros::delay(int(time + 50));
+	pros::delay(int(time));
 
 	bool running = true;
 	double error;
+	int dir;
+	double net;
 	double out;
 
-	if (dtheta > 0 && degrees < 0) {
-		degrees *= -1;
-	}
-
 	while (running) {
-		error = degrees - gyroA.get();
-		out = error;
+		error = degrees - (gyroB.get() * -1);
+		out = error * .9;
 
 		left_front.moveVelocity(out);
 		left_back.moveVelocity(out);
 		right_front.moveVelocity(-out);
 		right_back.moveVelocity(-out);
 
-		if (left_front.getActualVelocity() == 0) {
+		if (error < .2) {
 			running = false;
 		}
-
-		std::cout << "error:   " << error << '\n';
-		std::cout << "theta A: " << thetaA << '\n';
-		std::cout << "gyro A:  " << gyroA.get() << '\n';
-		std::cout << "degrees: " << degrees << '\n';
 
 		pros::delay(50);
 	}
 	drive.tank(0, 0);
 }
 
+void volt(double left, double right){
+	left_front.moveVoltage(12000*left);
+	left_back.moveVoltage(12000*left);
+	right_front.moveVoltage(12000*right);
+	right_back.moveVoltage(12000*right);
+}
+
+void vel(double left, double right){
+	left_front.moveVelocity(left);
+	left_back.moveVelocity(left);
+	right_front.moveVelocity(right);
+	right_back.moveVelocity(right);
+}
+
+void turn(double degrees, int speed){
+	angle += degrees;
+	double target = angle;
+	int count = 0;
+
+	double kp = 1.3;
+	double error = 1;
+	double out;
+	int xtra = 1;
+	bool run = true;
+	volt(0, 0);
+	while (fabs(error) >= .25 && run) {
+		error = target - gyroA.get();
+		if (error < 0) {
+			xtra = -2;
+		} else {
+			xtra = 2;
+		}
+		vel((error*kp) + xtra, (-error*kp) + xtra);
+
+		std::cout << "gyr: " << gyroA.get() << '\n';
+		std::cout << "err: " << error << '\n';
+		std::cout << "out: " << error*kp << '\n';
+		std::cout << "" << '\n';
+
+		pros::delay(20);
+	}
+	volt(0, 0);
+}
+
+void dist(double inches, double speed){
+	if (inches > 0) {
+		inches -= 3;
+	} else if (inches < 0) {
+		inches += 3;
+	}
+	//41.8 in/s max velocity, 41.8 m/s^2 acceleration (1 sec to accel)
+	const double velocity = 41.8;
+	int hertz = 50; //cycles per second
+	double power = 0;
+	double accel = 1.5; //accel in 1.5 seconds
+	int dir = 1;
+	if (inches < 0) { //for setting negativ speeds/distances
+		dir = -1;
+	}
+	double cycles = hertz * (speed/accel); //
+	double max = (hertz/(velocity*speed)) * (abs(inches) - (velocity * std::pow(cycles * 1/hertz, 2)));
+
+	while (fabs(power) < speed) {
+		power += accel/hertz;
+		volt(dir*power, dir*power); //slew up
+		pros::delay(1000/hertz);
+	}
+  power = speed;
+	volt(dir*speed, dir*speed); //set speed to max
+
+	for (int i = 0; i < max; i++) {
+		pros::delay(1000/hertz); //delay until slew down
+	}
+
+	while (fabs(power) >= accel/50) {
+		power -= accel/hertz;
+		volt(dir*power, dir*power); //slew down
+		pros::delay(1000/hertz);
+	}
+	volt(0, 0);
+}
+
 void driveDist(float dist, int speed){//in inches
   dist = ((dist / 12.566) * 360);
+	left_front.moveRelative(dist, speed);
+	left_back.moveRelative(dist, speed);
+	right_front.moveRelative(dist, speed);
+	right_back.moveRelative(dist, speed);
 }
 
 void driveArc(double radius, double exit_angle, int side, int max_speed){
@@ -135,15 +220,18 @@ void index(int speed){
 }
 
 void flySet(int speed){
-	flywheel.setTarget(speed);
+	flywheel_mtr.moveVelocity(speed);
 }
 
 void liftPos(int pos){
 	if (pos == 2) {
-		lift.setTarget(900);
+		lift.setMaxVelocity(160);
+		lift.setTarget(410);
 	} else if (pos == 1) {
-		lift.setTarget(220);
+		lift.setMaxVelocity(85);
+		lift.setTarget(180);
 	} else if (pos == 0) {
+		lift.setMaxVelocity(180);
 		lift.setTarget(0);
 	}
 }

@@ -6,9 +6,6 @@
 
 using namespace okapi;
 
-extern ADIGyro gyroA;
-extern ADIGyro gyroB;
-
 extern double thetaT, thetaA, dtheta;
 extern int dir;
 

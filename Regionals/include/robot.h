@@ -4,6 +4,9 @@
 #include "okapi/api.hpp"
 using namespace okapi;
 
+extern ADIGyro gyroA;
+extern ADIGyro gyroB;
+
 //Controllers
 extern Controller master;
 extern Controller partner;
@@ -33,7 +36,12 @@ void index(int speed);
 void flySet(int speed);
 void liftPos(int pos);
 
-void driveTurn(int degrees, int side, int speed);
+double botAngle();
+
+void dist(double inches, double speed);
+void turn(double degrees, int speed);
+
+void driveTurn(double degrees, int speed);
 
 void driveDist(float dist, int speed);
 

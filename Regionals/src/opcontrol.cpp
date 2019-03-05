@@ -1,22 +1,20 @@
 #include "main.h"
-
 void opcontrol() {
-	float left, right;
+	float u, d;
 	lift.tarePosition();
 
-	driveProfile.generatePath({ // generate 28 inch path
-		Point{0_ft, 0_ft, 0_deg},
-		Point{24_in, 0_ft, 0_deg}},
-		"shotDrive"
-	);
-
 	//1 controller
-	while (1){
+	while (1) {
 		while (duo == false){
-			left = master.getAnalog(ControllerAnalog::leftY);
-			right = master.getAnalog(ControllerAnalog::rightY);
 
-			drive.tank(left, right);
+			std::cout << "Sum: " << botAngle() << '\n';
+			std::cout << "A:   " << gyroA.get() << '\n';
+			std::cout << "B:   " << gyroB.get() << '\n';
+			std::cout << "" << '\n';
+			u = master.getAnalog(ControllerAnalog::leftY);
+			d = master.getAnalog(ControllerAnalog::rightX);
+
+			drive.arcade(u, d);
 
 			//macros
 			while(master.getDigital(ControllerDigital::down) == true){
@@ -25,18 +23,6 @@ void opcontrol() {
 				right_back.moveRelative(0, 0);
 				right_front.moveRelative(0, 0);
 			}
-
-/*
-			while(partner.getDigital(ControllerDigital::up) == true){
-				driveProfile.setTarget("shotDrive");
-				intake(200);
-				index(200); // shoot
-				while(partner.getDigital(ControllerDigital::up) == true){
-					pros::delay(20);
-				}
-				pros::delay(20);
-			}
-*/
 
 			//flywheel
 			if (master.getDigital(ControllerDigital::Y) == true) {
@@ -70,10 +56,10 @@ void opcontrol() {
 			//lift
 			if (master.getDigital(ControllerDigital::R1) == true) {
 				lift.setMaxVelocity(150);
-				lift.setTarget(900);
+				lift.setTarget(410);
 			} else if (master.getDigital(ControllerDigital::R2) == true) {
 				lift.setMaxVelocity(85);
-				lift.setTarget(220);
+				lift.setTarget(180);
 			} else {
 				lift.setMaxVelocity(180);
 				lift.setTarget(0);
@@ -88,28 +74,18 @@ void opcontrol() {
 
 		while (duo == true) {
 			//Drive - WIP
-			left = partner.getAnalog(ControllerAnalog::leftY);
-			right = partner.getAnalog(ControllerAnalog::rightY);
+			u = partner.getAnalog(ControllerAnalog::leftY);
+			d = partner.getAnalog(ControllerAnalog::rightY);
 
-			drive.tank(left * .9, right * .9);
+			drive.tank(u * .9, d * .9);
 
-			//
+			//stop
 			while(partner.getDigital(ControllerDigital::R2) == true){
 				left_back.moveRelative(0, 0);
 				left_front.moveRelative(0, 0);
 				right_back.moveRelative(0, 0);
 				right_front.moveRelative(0, 0);
 		  }
-
-			while(partner.getDigital(ControllerDigital::R1) == true){
-				driveProfile.setTarget("shotDrive");
-				intake(200);
-				index(200); // shoot
-				while(partner.getDigital(ControllerDigital::R1) == true){
-					pros::delay(20);
-				}
-				pros::delay(20);
-			}
 
 			//flywheel
 			if (master.getDigital(ControllerDigital::Y) == true) {
@@ -142,10 +118,10 @@ void opcontrol() {
 			//lift Position
 			if (master.getDigital(ControllerDigital::R1) == true) {
 				lift.setMaxVelocity(160);
-				lift.setTarget(900);
+				lift.setTarget(410);
 			} else if (master.getDigital(ControllerDigital::R2) == true) {
 				lift.setMaxVelocity(85);
-				lift.setTarget(220);
+				lift.setTarget(180);
 			} else {
 				lift.setMaxVelocity(180);
 				lift.setTarget(0);

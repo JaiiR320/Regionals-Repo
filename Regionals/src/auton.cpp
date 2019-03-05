@@ -2,6 +2,77 @@
 
 using namespace pros;
 
+void mainAuton(int side){
+  flySet(200);
+  intake(200);
+
+  dist(34, .75);
+  dist(-30, .75);
+  intake(0);
+
+  turn(90*side, 85);
+
+  delay(500);
+  intake(-2);
+  index(200); // shoot
+  delay(700);
+  index(-1);
+  delay(20);
+
+  intake(200); // start pushing ball into indexer
+
+  dist(26, .5);
+
+  index(200); // 2nd shoot
+  delay(950);
+
+  flySet(0); // stop shooting devices
+  intake(0);
+  index(0);
+
+  turn(30 * side, 85);
+  dist(18, .5);
+  dist(-18, .5);
+
+  turn(-120 * side, 85); // turn into cap
+
+  intake(-200);
+  dist(24, .75); // flip cap
+
+  turn(90 * side, 85);
+  dist(-50, 1);
+
+  robotStop();
+
+  while (1) {delay(20);}
+
+}
+void skillsAuton(int side){
+  flySet(200);
+  intake(200);
+  dist(40, .80); //grab ball
+  turn(45*side, 85);
+  dist(-12, .85);
+  turn(90*side, 85);
+  driveDist(-10, 40); //grab cap
+
+  liftPos(1);
+
+
+  while (1) {delay(20);}
+}
+
+void backAuton(int side){
+
+  turn(90.0 * side, 85);
+
+  turn(-45.0 * side, 85);
+  turn(-45 * side, 85);
+
+  while(1){}
+}
+
+/*
 //main Auton
 void mainAuton(int side){
   mainPathGen();
@@ -13,15 +84,14 @@ void mainAuton(int side){
   drive.setMaxVelocity(175);
   driveProfile.setTarget("42", true);
   driveProfile.waitUntilSettled();
-  delay(500);
   drive.setMaxVelocity(200);
 
-  driveTurn(91, side, 85);
+  driveTurn(90, side, 85);
 
   driveProfile.setTarget("10");
   driveProfile.waitUntilSettled();
 
-  delay(1400);
+  delay(500);
   intake(0);
   index(200); // shoot
   delay(700);
@@ -34,19 +104,15 @@ void mainAuton(int side){
   driveProfile.waitUntilSettled(); // aim middle
 
   index(200); // 2nd shoot
-  delay(750);
+  delay(850);
 
   flySet(0); // stop shooting devices
   intake(0);
   index(0);
 
-  driveProfile.removePath("38"); // remove old paths for memory
-
-  driveProfile.generatePath({
-    Point{0_ft, 0_ft, 0_deg},
-    Point{18_in, 0_ft, 0_deg}},
-    "18"
-  );
+  driveProfile.removePath("34"); // remove old paths for memory
+  driveProfile.removePath("42");
+  driveProfile.removePath("10");
 
   driveTurn(14, side, 100);
 
@@ -55,74 +121,26 @@ void mainAuton(int side){
   driveProfile.setTarget("18", true); // move into flag
   driveProfile.waitUntilSettled();
 
-  driveTurn(-105, side, 100); // turn to okapa
+  driveTurn(-130, side, 100); // turn to okapa
 
   intake(-200);
   drive.setMaxVelocity(150);
   driveProfile.setTarget("28");
   driveProfile.waitUntilSettled();
 
-  driveTurn(65, side, 100);
+  driveTurn(60, side, 100);
   driveDist(36, 200);
   delay(3000);
 
   robotStop();
+  while (1) {}
 }
-
-void backAuton(int side){
-
-  driveTurn(90, side, 75);
-
-  delay(1500);
-
-  while(1){}
-
-  /*
-  mainPathGen();
-  intake(200);
-
-  driveProfile.setTarget("38");
-  driveProfile.waitUntilSettled();
-
-  driveProfile.removePath("34 red");
-  driveProfile.removePath("34 blue");
-  driveProfile.removePath("34 28");
-
-  driveProfile.generatePath({
-    Point{0_ft, 0_ft, 0_deg},  // Profile starting position, this will normally be (0, 0, 0)
-    Point{8_in, 0_ft, 0_deg}}, // The next point in the profile, 3 feet forward
-    "12" // Profile name
-  );
-  driveProfile.generatePath({
-    Point{0_ft, 0_ft, 0_deg},  // Profile starting position, this will normally be (0, 0, 0)
-    Point{28_in, 0_ft, 0_deg}}, // The next point in the profile, 3 feet forward
-    "20" // Profile name
-  );
-
-  driveProfile.setTarget("12", true);
-  driveProfile.waitUntilSettled();
-
-  driveTurn(90, side, 100);
-  delay(650);
-
-  driveProfile.setTarget("20");
-  driveProfile.waitUntilSettled();
-
-  left_back.moveRelative(0, 0);
-  left_front.moveRelative(0, 0);
-  right_back.moveRelative(0, 0);
-  right_front.moveRelative(0, 0);
-
-  while (1) {
-    robotStop();
-  }
-  */
-}
+*/
 
 /*
   SKILLS
 */
-
+/*
 void skillsAuton(int side){
   skillsPathGen();
 
@@ -336,3 +354,4 @@ void skillsAuton(int side){
 
   while (1) {}
 }
+*/
