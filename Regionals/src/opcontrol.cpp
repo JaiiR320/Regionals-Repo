@@ -7,14 +7,10 @@ void opcontrol() {
 	while (1) {
 		while (duo == false){
 
-			std::cout << "Sum: " << botAngle() << '\n';
-			std::cout << "A:   " << gyroA.get() << '\n';
-			std::cout << "B:   " << gyroB.get() << '\n';
-			std::cout << "" << '\n';
 			u = master.getAnalog(ControllerAnalog::leftY);
-			d = master.getAnalog(ControllerAnalog::rightX);
+			d = master.getAnalog(ControllerAnalog::rightY);
 
-			drive.arcade(u, d);
+			drive.tank(u, d);
 
 			//macros
 			while(master.getDigital(ControllerDigital::down) == true){
@@ -26,13 +22,13 @@ void opcontrol() {
 
 			//flywheel
 			if (master.getDigital(ControllerDigital::Y) == true) {
-				flywheel.setTarget(200);
+				flySet(600);
 			} else if (master.getDigital(ControllerDigital::B) == true) {
-				flywheel.setTarget(0);
+				flySet(0);
 			}
 
 			if (master.getDigital(ControllerDigital::up) == true){
-				flywheel.setTarget(140);
+				flySet(500);
 			}
 
 			//intake
@@ -56,10 +52,10 @@ void opcontrol() {
 			//lift
 			if (master.getDigital(ControllerDigital::R1) == true) {
 				lift.setMaxVelocity(150);
-				lift.setTarget(410);
+				lift.setTarget(415);
 			} else if (master.getDigital(ControllerDigital::R2) == true) {
 				lift.setMaxVelocity(85);
-				lift.setTarget(180);
+				lift.setTarget(170);
 			} else {
 				lift.setMaxVelocity(180);
 				lift.setTarget(0);
@@ -118,10 +114,10 @@ void opcontrol() {
 			//lift Position
 			if (master.getDigital(ControllerDigital::R1) == true) {
 				lift.setMaxVelocity(160);
-				lift.setTarget(410);
+				lift.setTarget(415);
 			} else if (master.getDigital(ControllerDigital::R2) == true) {
 				lift.setMaxVelocity(85);
-				lift.setTarget(180);
+				lift.setTarget(170);
 			} else {
 				lift.setMaxVelocity(180);
 				lift.setTarget(0);

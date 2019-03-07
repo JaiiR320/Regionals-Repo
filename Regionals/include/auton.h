@@ -8,8 +8,9 @@ extern int Aauton;
 extern int Acolor;
 extern bool duo;
 
-void mainAuton(int side);
-void backAuton(int side);
-void skillsAuton(int side);
+void frontPark(int side);
+void frontFlag(int side);
+void backPark(int side);
+void skills(int side);
 
 #endif

@@ -13,7 +13,7 @@ Motor left_back = 1_rmtr;
 Motor right_front = 4_mtr;
 Motor right_back = 3_mtr;
 
-Motor flywheel_mtr = 6_mtr;
+Motor flywheel_mtr(6, false, AbstractMotor::gearset::blue);
 
 Motor lift_mtr = 10_mtr;
 
@@ -43,13 +43,9 @@ AsyncVelIntegratedController flywheel = AsyncControllerFactory::velIntegrated(fl
 //lift control
 AsyncPosIntegratedController lift = AsyncControllerFactory::posIntegrated(lift_mtr);
 
-double botAngle(){
-	double dir = 1;
-	if (gyroA.get() < 0) {
-		dir = -1;
-	}
-	double angle = ((fabs(gyroA.get()) + fabs(gyroB.get())) / 2) * dir;
-	return angle;
+void resetAngle(){
+	gyroA.reset();
+	angle = 0;
 }
 void driveTurn(double degrees, int speed){ //Pos degrees turns right
 	//41.8 in/s, 9.15 in for 90 deg turn,
@@ -118,15 +114,15 @@ void turn(double degrees, int speed){
 	double kp = 1.3;
 	double error = 1;
 	double out;
-	int xtra = 1;
+	double xtra = 1;
 	bool run = true;
 	volt(0, 0);
 	while (fabs(error) >= .25 && run) {
 		error = target - gyroA.get();
 		if (error < 0) {
-			xtra = -2;
+			xtra = -4;
 		} else {
-			xtra = 2;
+			xtra = 4;
 		}
 		vel((error*kp) + xtra, (-error*kp) + xtra);
 
@@ -226,10 +222,10 @@ void flySet(int speed){
 void liftPos(int pos){
 	if (pos == 2) {
 		lift.setMaxVelocity(160);
-		lift.setTarget(410);
+		lift.setTarget(415);
 	} else if (pos == 1) {
 		lift.setMaxVelocity(85);
-		lift.setTarget(180);
+		lift.setTarget(170);
 	} else if (pos == 0) {
 		lift.setMaxVelocity(180);
 		lift.setTarget(0);

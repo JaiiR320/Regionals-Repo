@@ -36,7 +36,7 @@ void index(int speed);
 void flySet(int speed);
 void liftPos(int pos);
 
-double botAngle();
+void resetAngle();
 
 void dist(double inches, double speed);
 void turn(double degrees, int speed);

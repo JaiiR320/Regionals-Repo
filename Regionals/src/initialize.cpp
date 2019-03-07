@@ -10,14 +10,14 @@ bool duo = false;
 
 static lv_res_t side_sel(lv_obj_t * sideBTNS, const char *txt){
 	//occurs when side button are toggled
-	if (strcmp(txt, "Main") == 0) {
+	if (strcmp(txt, "Front Park") == 0) {
 		Aauton = 1;
-	} else if (strcmp(txt, "Back") == 0){
+	} else if (strcmp(txt, "Front Flag") == 0){
 		Aauton = 2;
-	}	else if(strcmp(txt, "Skills") == 0){
+	}	else if(strcmp(txt, "Back Park") == 0){
 		Aauton = 3;
-	} else {
-		Aauton = 0;
+	} else if(strcmp(txt, "Skills") == 0){
+		Aauton = 4;
 	}
 
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
@@ -49,7 +49,7 @@ static lv_res_t duo_sel(lv_obj_t * duoBTNS, const char *txt){
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
 
-static const char * btnm_side[] = {"Main", "Back", "Skills", ""};
+static const char * btnm_side[] = {"Front Park", "Front Flag", "Back Park", "Skills", ""};
 static const char * btnm_color[] = {"Red", "Blue", ""};
 static const char * btnm_duo[] = {"Duo", "Solo", ""};
 
@@ -90,7 +90,7 @@ void initialize() {
 	lv_btnm_set_style(sideBTNS, LV_BTNM_STYLE_BTN_TGL_REL, &style_btn_pr);
 	lv_obj_set_size(sideBTNS, LV_HOR_RES, LV_VER_RES / 3);
 	//Allow toggling
-	for (std::size_t i = 0; i < 2; i++){
+	for (std::size_t i = 0; i < 3; i++){
 		lv_btnm_set_toggle(sideBTNS, true, i);
 	}
 
@@ -124,6 +124,7 @@ void initialize() {
 	for (std::size_t i = 0; i < 1; i++){
 		lv_btnm_set_toggle(duoBTNS, true, i);
 	}
+	lift.tarePosition();
 }
 
 void disabled() {
