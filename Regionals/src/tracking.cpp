@@ -1,23 +1,29 @@
 #include "main.h"
 
 ADIGyro gyroA(7, .1);
-ADIGyro gyroB(8, .1);
-
-double thetaT = 0;
-double thetaA = 0;
-double dtheta = 0;
-int dir = 1;
 /*
+double gyroAngle = 0;
+double encAngle = 0;
+double actualAngle = 0; //actual angle of the robot
+double expectedAngle = 0; //angle the bot should be at
+double leftD, rightD = 0; //distance the robot travels per side
+int dir = 1;
+
+double trackError = 0;
+
 void update(void* params){
   while (1) {
-    if (gyroA.get() < 0) {
-      dir = -1;
-    } else {
-      dir = 1;
-    }
-    thetaA = (fabs(gyroA.get()) + fabs(gyroB.get()) / 2) * dir;
-    dtheta = thetaA - thetaT;
-    pros::delay(1);
+    leftD = left_back.getPosition();
+    rightD = right_back.getPosition();
+
+    leftD = (leftD/360) * 12.56; //calcs the distance wheels travel in in
+    rightD = (rightD/360) * 12.56;
+
+    encAngle = ((leftD+rightD)/36.9) * 360; //calcs encoder angle of the bot
+
+    trackError = expectedAngle - encAngle;
+
+    pros::delay(20);
   }
 }
 

@@ -2,7 +2,7 @@
 
 
 void autonomous() {
-
+  lift.tarePosition();
   switch (Aauton) {
     case 1: frontPark(Acolor);
     case 2: frontFlag(Acolor);

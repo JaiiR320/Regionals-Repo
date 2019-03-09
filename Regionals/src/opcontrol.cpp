@@ -6,6 +6,7 @@ void opcontrol() {
 	//1 controller
 	while (1) {
 		while (duo == false){
+			std::cout << "Gryo: " << gyroA.get() << '\n';
 
 			u = master.getAnalog(ControllerAnalog::leftY);
 			d = master.getAnalog(ControllerAnalog::rightY);
@@ -26,9 +27,14 @@ void opcontrol() {
 			} else if (master.getDigital(ControllerDigital::B) == true) {
 				flySet(0);
 			}
-
+			//doubleshot
 			if (master.getDigital(ControllerDigital::up) == true){
-				flySet(500);
+				index(200);
+				pros::delay(650);
+				index(-1);
+				intake(200);
+				dist(26, .5);
+				index(200);
 			}
 
 			//intake

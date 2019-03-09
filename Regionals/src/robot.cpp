@@ -1,9 +1,9 @@
 #include "main.h"
 
+//robot properties
+double max_vel = 41.8;
 double bot_width = 11.75 / 2;
-
 double angle = 0;
-
 //Controllers
 Controller master = ControllerId::master;
 Controller partner = ControllerId::partner;
@@ -47,7 +47,7 @@ void resetAngle(){
 	gyroA.reset();
 	angle = 0;
 }
-void driveTurn(double degrees, int speed){ //Pos degrees turns right
+void driveTurn(double degrees, int speed){ //NOT USED
 	//41.8 in/s, 9.15 in for 90 deg turn,
 	double arclength = 2 * 3.1415926 * bot_width * (degrees / 360);
 
@@ -126,11 +126,6 @@ void turn(double degrees, int speed){
 		}
 		vel((error*kp) + xtra, (-error*kp) + xtra);
 
-		std::cout << "gyr: " << gyroA.get() << '\n';
-		std::cout << "err: " << error << '\n';
-		std::cout << "out: " << error*kp << '\n';
-		std::cout << "" << '\n';
-
 		pros::delay(20);
 	}
 	volt(0, 0);
@@ -148,7 +143,7 @@ void dist(double inches, double speed){
 	double power = 0;
 	double accel = 1.5; //accel in 1.5 seconds
 	int dir = 1;
-	if (inches < 0) { //for setting negativ speeds/distances
+	if (inches < 0) { //for setting negative speeds/distances
 		dir = -1;
 	}
 	double cycles = hertz * (speed/accel); //
@@ -174,7 +169,7 @@ void dist(double inches, double speed){
 	volt(0, 0);
 }
 
-void driveDist(float dist, int speed){//in inches
+void driveDist(float dist, int speed){//NOT USED
   dist = ((dist / 12.566) * 360);
 	left_front.moveRelative(dist, speed);
 	left_back.moveRelative(dist, speed);
@@ -182,7 +177,7 @@ void driveDist(float dist, int speed){//in inches
 	right_back.moveRelative(dist, speed);
 }
 
-void driveArc(double radius, double exit_angle, int side, int max_speed){
+void driveArc(double radius, double exit_angle, int side, int max_speed){ //NOT USED
 	exit_angle *= 3.1415926 / 180.0; //1.5 for 90 deg
 	//-40 rad =
   double arc_left = (radius + (side * 7.325)) * exit_angle;
