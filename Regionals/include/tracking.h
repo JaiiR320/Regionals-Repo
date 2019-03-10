@@ -7,7 +7,7 @@
 using namespace okapi;
 
 extern double gyroAngle;
-extern double encAngle;
+extern double dTheta;
 extern double actualAngle; //actual angle of the robot
 extern double expectedAngle; //angle the bot should be at
 extern double leftD, rightD; //distance the robot travels per side

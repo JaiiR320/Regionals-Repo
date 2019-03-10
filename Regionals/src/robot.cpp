@@ -3,7 +3,7 @@
 //robot properties
 double max_vel = 41.8;
 double bot_width = 11.75 / 2;
-double angle = 0;
+double targetAngle = 0;
 //Controllers
 Controller master = ControllerId::master;
 Controller partner = ControllerId::partner;
@@ -45,7 +45,7 @@ AsyncPosIntegratedController lift = AsyncControllerFactory::posIntegrated(lift_m
 
 void resetAngle(){
 	gyroA.reset();
-	angle = 0;
+	targetAngle = 0;
 }
 void driveTurn(double degrees, int speed){ //NOT USED
 	//41.8 in/s, 9.15 in for 90 deg turn,
@@ -107,8 +107,8 @@ void vel(double left, double right){
 }
 
 void turn(double degrees, int speed){
-	angle += degrees;
-	double target = angle;
+	targetAngle += degrees;
+	double target = targetAngle;
 	int count = 0;
 
 	double kp = 1.3;
