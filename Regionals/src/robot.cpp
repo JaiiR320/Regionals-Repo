@@ -66,29 +66,8 @@ void driveTurn(double degrees, int speed){ //NOT USED
 		time *= -1;
 	}
 
-	pros::delay(int(time));
+	pros::delay(int(time) + 75);
 
-	bool running = true;
-	double error;
-	int dir;
-	double net;
-	double out;
-
-	while (running) {
-		error = degrees - (gyroB.get() * -1);
-		out = error * .9;
-
-		left_front.moveVelocity(out);
-		left_back.moveVelocity(out);
-		right_front.moveVelocity(-out);
-		right_back.moveVelocity(-out);
-
-		if (error < .2) {
-			running = false;
-		}
-
-		pros::delay(50);
-	}
 	drive.tank(0, 0);
 }
 
